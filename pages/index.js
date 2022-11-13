@@ -3,6 +3,7 @@ import config from '../config.json';
 import styled from 'styled-components';
 import Menu from '../src/components/Menu';
 import { StyledTimeline } from '../src/components/TimeLine';
+import { videoService } from '../src/services/videoService';
 
 function HomePage() {
   const homePageStyles = {
@@ -10,7 +11,22 @@ function HomePage() {
     flexDirection: 'column',
     flex: 1,
   };
+  const service = videoService();
   const [filterValue, setFilterValue] = React.useState('');
+  const [playlists, setPlaylists] = React.useState({});
+
+  React.useEffect(() => {
+    service.getAllVideos().then((dados) => {
+      const novasPlaylists = { ...playlists };
+      dados.data.forEach((video) => {
+        if (!novasPlaylists[video.playlist]) {
+          novasPlaylists[video.playlist] = [];
+        }
+        novasPlaylists[video.playlist].push(video);
+      });
+      setPlaylists(novasPlaylists);
+    });
+  }, []);
 
   return (
     <>
